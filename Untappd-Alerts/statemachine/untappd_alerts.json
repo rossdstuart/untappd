@@ -1,0 +1,56 @@
+{
+    "Comment": "A state machine that does mock stock trading.",
+    "StartAt": "Check Stock Value",
+    "States": {
+        "Check Stock Value": {
+            "Type": "Task",
+            "Resource": "${GetBeersFunctionArn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 1.5
+                }
+            ],
+            "Next": "Record Transaction"
+        },
+        "Record Transaction": {
+            "Type": "Task",
+            "Resource": "${DDBPutItem}",
+            "Parameters": {
+                "TableName": "${DDBTable}",
+                "Item": {
+                    "Id": {
+                        "S.$": "$.id"
+                    },
+                    "Type": {
+                        "S.$": "$.type"
+                    },
+                    "Price": {
+                        "N.$": "$.price"
+                    },
+                    "Quantity": {
+                        "N.$": "$.qty"
+                    },
+                    "Timestamp": {
+                        "S.$": "$.timestamp"
+                    }
+                }
+            },
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 20,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 10
+                }
+            ],
+            "End": true
+        }
+    }
+}
