@@ -3,7 +3,7 @@
 */.aws-sam
 
 # Environment files and local secrets
-.env
+Untappd-Alerts/.env
 */.env
 
 # Ignore the entire .idea folder
@@ -197,7 +197,7 @@ celerybeat-schedule.*
 *.sage.py
 
 # Environments
-.env
+Untappd-Alerts/.env
 .venv
 env/
 venv/

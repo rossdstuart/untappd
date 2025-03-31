@@ -12,7 +12,7 @@ def get_secret():
     secret = json.loads(response['SecretString'])
     return secret['CLIENT_ID'], secret['CLIENT_SECRET']
 
-brewery_id = 23570 #hop butcher brewery ID
+brewery_id = 23570 #hop butcher brewery ID #TODO update to env variable
 
 def get_brewery_beers(get_brewery_id):
     """
@@ -73,9 +73,9 @@ def get_brewery_beers(get_brewery_id):
             time.sleep(1)
 
         # Convert the list of dictionaries to a DataFrame
-        # all_beers_raw = pd.DataFrame(all_beers)
-        beers_int = pd.read_json(io.StringIO(all_beers), orient='records')
-        return beers_df['beer']
+        all_beers_raw_df = pd.DataFrame(all_beers)
+        # beers_int = pd.read_json(io.StringIO(all_beers), orient='records')
+        return all_beers_raw_df['beer']
 
 try:
     beers_df = get_brewery_beers(brewery_id)
@@ -89,7 +89,9 @@ try:
     # print(beers_df[['beer.bid', 'beer.beer_name']])
 
     # Define the S3 bucket name and file path
-    bucket_name = os.environ['BUCKET_NAME']
+    # bucket_name = os.environ['BUCKET_NAME']
+    # bucket_name = os.getenv('BUCKET_NAME')
+    bucket_name = "untappd-784947213393" #TODO Update to envirnoment variable passed S3 BUCKET_NAME
     local_file_path = f"/tmp/{brewery_id}.txt"
     s3_file_path = f"beer_list/{brewery_id}.txt"
 
@@ -114,7 +116,7 @@ try:
 
     # # Upload the file
     # s3_client = boto3.client('s3')
-    # s3_client.upload_file(local_file_path, bucket_name, s3_file_path)
+    s3_client.upload_file(local_file_path, bucket_name, s3_file_path)
 
 
 except requests.exceptions.HTTPError as e:
